@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Learn with Hanzala — Ethical Hacking & Digital Education</title>
+  <meta name="description" content="Premium ethical hacking courses, trading resources, design guides, and more — curated by Hanzala." />
+
+  <!-- ===== FONTS: Hacker-soothing, not generic ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ================================================
+       CSS CUSTOM PROPERTIES — LIGHT & DARK THEME
+       ================================================ */
+    :root {
+      --bg:        #f5f5f5;
+      --bg2:       #ececec;
+      --surface:   #ffffff;
+      --text:      #0d0d0d;
+      --text-muted:#666666;
+      --accent:    #0d0d0d;
+      --border:    rgba(0,0,0,0.10);
+      --border2:   rgba(0,0,0,0.20);
+      --glow:      rgba(0,0,0,0.04);
+      --shadow:    rgba(0,0,0,0.08);
+    }
+    [data-theme="dark"] {
+      --bg:        #080808;
+      --bg2:       #111111;
+      --surface:   #161616;
+      --text:      #e8e8e8;
+      --text-muted:#777777;
+      --accent:    #ffffff;
+      --border:    rgba(255,255,255,0.08);
+      --border2:   rgba(255,255,255,0.18);
+      --glow:      rgba(255,255,255,0.03);
+      --shadow:    rgba(0,0,0,0.6);
+    }
+
+    /* ================================================
+       RESET & BASE
+       ================================================ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-size:16px; }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.45s ease, color 0.45s ease;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ================================================
+       GRAIN / TEXTURE OVERLAY — adds depth
+       ================================================ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.5;
+    }
+
+    /* ================================================
+       CUSTOM CURSOR — desktop only
+       ================================================ */
+    .cursor {
+      width: 7px; height: 7px;
+      background: var(--text);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+    }
+    .cursor-ring {
+      width: 30px; height: 30px;
+      border: 1px solid var(--text);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform 0.18s ease, opacity 0.18s;
+      opacity: 0.45;
+    }
+    @media (hover: none) {
+      .cursor, .cursor-ring { display: none; }
+    }
+
+    /* ================================================
+       SCROLL PROGRESS — right side
+       ================================================ */
+    .scroll-indicator {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 2rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .scroll-track {
+      width: 1px; height: 64px;
+      background: var(--border);
+      position: relative;
+    }
+    .scroll-fill {
+      position: absolute; top: 0; left: 0;
+      width: 100%;
+      background: var(--text);
+      transition: height 0.1s linear;
+    }
+    .scroll-txt {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.5rem;
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+      writing-mode: vertical-rl;
+    }
+    @media (max-width: 480px) { .scroll-indicator { display: none; } }
+
+    /* ================================================
+       NAVIGATION
+       ================================================ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 500;
+      padding: 1.1rem 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(22px) saturate(1.4);
+      -webkit-backdrop-filter: blur(22px) saturate(1.4);
+      background: rgba(245,245,245,0.82);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.45s, border-color 0.45s;
+    }
+    [data-theme="dark"] nav {
+      background: rgba(8,8,8,0.82);
+    }
+
+    /* Logo */
+    .nav-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.15em;
+    }
+    .nav-logo .dim { color: var(--text-muted); font-weight: 400; }
+
+    .nav-right {
+      display: flex; align-items: center; gap: 2.5rem;
+    }
+
+    /* Nav links — hidden on mobile */
+    .nav-links {
+      display: flex; gap: 2rem; list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    @media (max-width: 720px) { .nav-links { display: none; } }
+
+    /* Dark mode toggle pill */
+    .theme-btn {
+      width: 42px; height: 22px;
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: 11px;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: border-color 0.3s;
+    }
+    .theme-btn::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 16px; height: 16px;
+      background: var(--text);
+      border-radius: 50%;
+      transition: transform 0.35s cubic-bezier(.77,0,.18,1), background 0.35s;
+    }
+    [data-theme="dark"] .theme-btn::after {
+      transform: translateX(20px);
+    }
+
+    /* ================================================
+       HERO SECTION
+       ================================================ */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 9rem 3rem 5rem;
+      position: relative;
+      overflow: hidden;
+      gap: 3rem;
+    }
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 8rem 1.5rem 4rem;
+      }
+      .hero-3d-col { display: none; }
+    }
+
+    /* Decorative diagonal lines in hero bg */
+    .hero-bg-lines {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-bg-lines::before {
+      content: '';
+      position: absolute;
+      top: 20%; right: -5%;
+      width: 60%; height: 1px;
+      background: linear-gradient(to right, transparent, var(--border2), transparent);
+      transform: rotate(-12deg);
+    }
+    .hero-bg-lines::after {
+      content: '';
+      position: absolute;
+      bottom: 20%; left: -5%;
+      width: 40%; height: 1px;
+      background: linear-gradient(to right, transparent, var(--border2), transparent);
+      transform: rotate(5deg);
+    }
+
+    .hero-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-bottom: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .hero-label::before {
+      content: '>';
+      color: var(--text-muted);
+    }
+
+    /* Big glitch title */
+    .hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .hero-title .word-with {
+      display: block;
+      font-size: 0.38em;
+      font-weight: 400;
+      letter-spacing: 0.5em;
+      color: var(--text-muted);
+      font-family: 'Share Tech Mono', monospace;
+      margin: 0.4em 0;
+    }
+
+    /* Glitch effect on individual word */
+    .glitch-text {
+      position: relative;
+      display: inline-block;
+    }
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    .glitch-text::before {
+      color: var(--text-muted);
+      animation: glitch-a 4s infinite;
+      clip-path: polygon(0 0, 100% 0, 100% 38%, 0 38%);
+    }
+    .glitch-text::after {
+      color: var(--text-muted);
+      animation: glitch-b 4s infinite;
+      clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+    }
+    @keyframes glitch-a {
+      0%,88%,100% { transform: none; opacity: 0; }
+      90%          { transform: translateX(-4px); opacity: 0.55; }
+      93%          { transform: translateX(3px);  opacity: 0.55; }
+      96%          { transform: none; opacity: 0; }
+    }
+    @keyframes glitch-b {
+      0%,85%,100% { transform: none; opacity: 0; }
+      87%          { transform: translateX(4px);  opacity: 0.4; }
+      90%          { transform: translateX(-3px); opacity: 0.4; }
+      93%          { transform: none; opacity: 0; }
+    }
+
+    .hero-subtitle {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Skill tags */
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--border2);
+      color: var(--text-muted);
+      transition: all 0.3s;
+      cursor: default;
+    }
+    .tag:hover {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    /* Contact buttons */
+    .cta-row {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    /* Base button — diagonal clip feel */
+    .btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      padding: 0.9rem 1.8rem;
+      border: 1px solid var(--text);
+      color: var(--text);
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.35s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--text);
+      transform: translateY(101%);
+      transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+    }
+    .btn:hover::before, .btn:focus::before { transform: translateY(0); }
+    .btn:hover, .btn:focus { color: var(--bg); }
+    .btn span { position: relative; z-index: 1; }
+    .btn-icon { position: relative; z-index: 1; font-size: 1rem; }
+
+    /* WhatsApp accent */
+    .btn-wa { border-color: #25d366; color: #25d366; }
+    .btn-wa::before { background: #25d366; }
+    .btn-wa:hover { color: #fff; }
+
+    /* ================================================
+       3D HERO VISUAL — rotating rings
+       ================================================ */
+    .hero-3d-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .orb-container {
+      width: 300px; height: 300px;
+      position: relative;
+      perspective: 700px;
+    }
+    .orb-inner {
+      width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+    /* Individual rings */
+    .orb-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .orb-ring-1 {
+      width: 200px; height: 200px;
+      border-color: var(--border2);
+      animation: orbit1 9s linear infinite;
+    }
+    .orb-ring-2 {
+      width: 270px; height: 270px;
+      border-color: var(--border);
+      animation: orbit2 14s linear infinite reverse;
+    }
+    .orb-ring-3 {
+      width: 140px; height: 140px;
+      border-color: var(--border2);
+      animation: orbit3 6s linear infinite;
+    }
+    .orb-ring-4 {
+      width: 320px; height: 130px;
+      border-color: var(--border);
+      border-radius: 50%;
+      animation: orbit4 11s linear infinite;
+      transform-origin: center;
+    }
+    .orb-dot {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 8px; height: 8px;
+      background: var(--text);
+      border-radius: 50%;
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 16px var(--text);
+    }
+    @keyframes orbit1 {
+      from { transform: translate(-50%,-50%) rotateX(60deg) rotateZ(0deg); }
+      to   { transform: translate(-50%,-50%) rotateX(60deg) rotateZ(360deg); }
+    }
+    @keyframes orbit2 {
+      from { transform: translate(-50%,-50%) rotateY(60deg) rotateZ(0deg); }
+      to   { transform: translate(-50%,-50%) rotateY(60deg) rotateZ(360deg); }
+    }
+    @keyframes orbit3 {
+      from { transform: translate(-50%,-50%) rotateX(80deg) rotateZ(0deg); }
+      to   { transform: translate(-50%,-50%) rotateX(80deg) rotateZ(360deg); }
+    }
+    @keyframes orbit4 {
+      from { transform: translate(-50%,-50%) rotateX(10deg) rotateY(20deg) rotateZ(0deg); }
+      to   { transform: translate(-50%,-50%) rotateX(10deg) rotateY(20deg) rotateZ(360deg); }
+    }
+
+    /* ================================================
+       TICKER / UPDATE BANNER
+       ================================================ */
+    .ticker-bar {
+      background: var(--text);
+      color: var(--bg);
+      padding: 0.65rem 0;
+      overflow: hidden;
+    }
+    .ticker-inner {
+      display: flex;
+      width: max-content;
+      animation: tickerMove 28s linear infinite;
+    }
+    .ticker-inner:hover { animation-play-state: paused; }
+    .ticker-chunk {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding: 0 2.5rem;
+    }
+    .ticker-sep { opacity: 0.4; margin: 0 1rem; }
+    @keyframes tickerMove {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ================================================
+       SHARED SECTION STYLES
+       ================================================ */
+    .sec-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .sec-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .sec-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.6rem, 4.5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    /* ================================================
+       ABOUT SECTION
+       ================================================ */
+    .about-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+      padding: 8rem 3rem;
+    }
+    @media (max-width: 900px) {
+      .about-section { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1.5rem; }
+      .about-visual-col { display: none; }
+    }
+
+    /* ASCII/binary art box */
+    .about-visual-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .binary-art {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      line-height: 1.6;
+      color: var(--border2);
+      user-select: none;
+      transform: rotate(-3deg);
+      transition: color 0.5s;
+      transform-style: preserve-3d;
+    }
+    .binary-art:hover { color: var(--text-muted); }
+
+    .about-text {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-top: 1.5rem;
+      max-width: 520px;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 3rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+    .stat-lbl {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+    }
+
+    /* ================================================
+       COURSES SECTION
+       ================================================ */
+    .courses-section {
+      padding: 6rem 3rem;
+    }
+    @media (max-width: 720px) { .courses-section { padding: 5rem 1.5rem; } }
+
+    .courses-head {
+      margin-bottom: 3.5rem;
+    }
+    .courses-hint {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 0.8rem;
+    }
+
+    /* Grid — no visible boxes, separated by 1px lines */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      background: var(--border);
+      gap: 1px;
+    }
+
+    /* Course card — no boxy look, uses whitespace & type */
+    .course-card {
+      background: var(--surface);
+      padding: 2.2rem 1.8rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: background 0.35s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Left accent bar */
+    .course-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px; height: 0;
+      background: var(--text);
+      transition: height 0.4s cubic-bezier(.77,0,.18,1);
+    }
+    .course-card:hover::before,
+    .course-card:focus::before { height: 100%; }
+
+    /* Full-card hover fill from bottom */
+    .course-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--text);
+      transform: translateY(100%);
+      transition: transform 0.45s cubic-bezier(.77,0,.18,1);
+      z-index: 0;
+    }
+    .course-card:hover::after { transform: translateY(0); }
+    .course-card:hover .course-num,
+    .course-card:hover .course-name,
+    .course-card:hover .course-tag,
+    .course-card:hover .course-arrow { color: var(--bg) !important; border-color: rgba(255,255,255,0.25) !important; }
+
+    /* Card inner elements — above ::after */
+    .course-num, .course-name, .course-tag, .course-icon-el, .course-arrow {
+      position: relative; z-index: 1;
+    }
+    .course-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+      transition: color 0.35s;
+    }
+    .course-icon-el {
+      font-size: 1.4rem;
+      margin: 0.2rem 0;
+    }
+    .course-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.35;
+      letter-spacing: 0.03em;
+      transition: color 0.35s;
+    }
+    .course-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
+      display: inline-block;
+      width: fit-content;
+      transition: color 0.35s, border-color 0.35s;
+    }
+    .course-arrow {
+      margin-top: auto;
+      font-size: 1rem;
+      color: var(--text-muted);
+      transition: transform 0.3s, color 0.35s;
+    }
+    .course-card:hover .course-arrow { transform: translateX(8px); }
+
+    /* 3D tilt on hover — applied via JS */
+    .course-card { perspective: 600px; }
+
+    /* ================================================
+       COMING SOON SECTION
+       ================================================ */
+    .coming-section {
+      padding: 8rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    @media (max-width: 720px) { .coming-section { padding: 5rem 1.5rem; } }
+
+    .coming-radial {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, var(--glow) 0%, transparent 68%);
+      pointer-events: none;
+    }
+    .coming-inner { position: relative; z-index: 1; }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid var(--border2);
+      padding: 0.4rem 1rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      margin-bottom: 2rem;
+    }
+    .live-dot {
+      width: 6px; height: 6px;
+      background: #e84040;
+      border-radius: 50%;
+      animation: livepulse 1.6s ease-in-out infinite;
+    }
+    @keyframes livepulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    .coming-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+    .coming-title .muted-line { color: var(--text-muted); font-weight: 400; }
+
+    .coming-desc {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 580px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.65;
+    }
+
+    .coming-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      justify-content: center;
+    }
+    .coming-pill {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      padding: 0.45rem 1rem;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .coming-pill::after { content: ' 🔒'; }
+
+    /* ================================================
+       FOOTER
+       ================================================ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 3rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 2rem;
+    }
+    @media (max-width: 720px) {
+      footer {
+        grid-template-columns: 1fr;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        gap: 1.2rem;
+      }
+      .footer-right { justify-content: center; }
+    }
+
+    .footer-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+    .footer-mid {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+      text-align: center;
+      line-height: 2;
+    }
+    .footer-right {
+      display: flex;
+      gap: 1.2rem;
+    }
+    .footer-link {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      transition: color 0.3s;
+    }
+    .footer-link:hover { color: var(--text); }
+
+    /* ================================================
+       SCROLL REVEAL ANIMATIONS
+       ================================================ */
+    .reveal        { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal-left   { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal-right  { opacity: 0; transform: translateX(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.in, .reveal-left.in, .reveal-right.in { opacity: 1; transform: none; }
+
+    .d1 { transition-delay: 0.08s; }
+    .d2 { transition-delay: 0.18s; }
+    .d3 { transition-delay: 0.28s; }
+    .d4 { transition-delay: 0.38s; }
+    .d5 { transition-delay: 0.48s; }
+
+    /* ================================================
+       MODAL OVERLAY
+       ================================================ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2.8rem;
+      position: relative;
+      transform: translateY(28px) scale(0.98);
+      transition: transform 0.4s cubic-bezier(.77,0,.18,1);
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal::-webkit-scrollbar { width: 3px; }
+    .modal::-webkit-scrollbar-thumb { background: var(--border2); }
+
+    .modal-x {
+      position: absolute;
+      top: 1.4rem; right: 1.4rem;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 34px; height: 34px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, color 0.3s;
+    }
+    .modal-x:hover { background: var(--text); color: var(--bg); }
+
+    .modal-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      letter-spacing: 0.3em;
+      margin-bottom: 0.8rem;
+    }
+    .modal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.2rem, 3.5vw, 2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1.4rem;
+    }
+    .modal-intro {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+    .modal-hr {
+      height: 1px;
+      background: var(--border);
+      margin: 2rem 0;
+    }
+
+    /* ===== DRIVE LINK BOX =====
+       Add your Google Drive link in the JS courses object.
+       The button below is populated dynamically.
+    ============================= */
+    .drive-box {
+      background: var(--bg2);
+      border: 1px dashed var(--border2);
+      padding: 2rem;
+      text-align: center;
+    }
+    .drive-box-lbl {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+    .drive-box-sub {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+    }
+    .drive-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      padding: 0.85rem 2rem;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: opacity 0.3s;
+    }
+    .drive-btn:hover { opacity: 0.78; }
+    .drive-url {
+      display: block;
+      margin-top: 0.8rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      word-break: break-all;
+    }
+
+    @media (max-width: 480px) {
+      .modal { padding: 1.8rem 1.2rem; }
+      nav { padding: 1rem 1.2rem; }
+    }
+
+    /* ================================================
+       SCROLLBAR GLOBAL
+       ================================================ */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); }
+  </style>
+</head>
+<body>
+
+  <!-- ===== CUSTOM CURSOR (desktop) ===== -->
+  <div class="cursor" id="js-cursor"></div>
+  <div class="cursor-ring" id="js-ring"></div>
+
+  <!-- ===== SCROLL INDICATOR ===== -->
+  <div class="scroll-indicator">
+    <div class="scroll-track"><div class="scroll-fill" id="js-scroll-fill"></div></div>
+    <span class="scroll-txt">SCROLL</span>
+  </div>
+
+  <!-- ================================================
+       NAVIGATION
+       ================================================ -->
+  <nav>
+    <a href="#home" class="nav-logo">
+      LEARN<span class="dim">WITH</span>HANZALA
+    </a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#about">about</a></li>
+        <li><a href="#courses">courses</a></li>
+        <li><a href="#footer">contact</a></li>
+      </ul>
+      <!-- Dark mode toggle button -->
+      <button class="theme-btn" id="js-theme-btn" aria-label="Toggle dark mode"></button>
+    </div>
+  </nav>
+
+  <!-- ================================================
+       HERO SECTION
+       ================================================ -->
+  <section class="hero" id="home">
+    <div class="hero-bg-lines"></div>
+
+    <!-- ---- LEFT: Text ---- -->
+    <div class="hero-content">
+      <div class="hero-label">ethical hacking · digital education · curated knowledge</div>
+
+      <h1 class="hero-title">
+        <span class="glitch-text" data-text="LEARN">LEARN</span>
+        <span class="word-with">WITH</span>
+        <span class="glitch-text" data-text="HANZALA">HANZALA</span>
+      </h1>
+
+      <p class="hero-subtitle">Knowledge is the weapon.</p>
+
+      <!-- Skill tags / bio chips -->
+      <div class="hero-tags">
+        <span class="tag">Automated Bots</span>
+        <span class="tag">Telegram + Discord</span>
+        <span class="tag">Python Dev</span>
+        <span class="tag">Web Designer</span>
+        <span class="tag">Calligrapher</span>
+      </div>
+
+      <!-- ===== CONTACT BUTTONS =====
+           WhatsApp: opens wa.me link
+           Email: opens mail client
+      ================================ -->
+      <div class="cta-row" id="contact">
+        <a href="https://wa.me/923184427080" target="_blank" rel="noopener" class="btn btn-wa">
+          <span class="btn-icon">💬</span>
+          <span>WhatsApp</span>
+        </a>
+        <a href="mailto:hanzala.dev@hotmail.com" class="btn">
+          <span class="btn-icon">✉</span>
+          <span>Email Me</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ---- RIGHT: 3D rotating orb ---- -->
+    <div class="hero-3d-col">
+      <div class="orb-container" id="js-orb">
+        <div class="orb-inner">
+          <div class="orb-ring orb-ring-1"></div>
+          <div class="orb-ring orb-ring-2"></div>
+          <div class="orb-ring orb-ring-3"></div>
+          <div class="orb-ring orb-ring-4"></div>
+          <div class="orb-dot"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       UPDATE TICKER BANNER
+       ================================================ -->
+  <div class="ticker-bar" role="marquee" aria-label="Upcoming updates">
+    <div class="ticker-inner">
+      <!-- Duplicated for seamless loop -->
+      <span class="ticker-chunk">🚀 NEW UPDATE COMING SOON <span class="ticker-sep">·</span> Extra Hacking Tools &amp; Tutorials <span class="ticker-sep">·</span> Advanced Pentesting <span class="ticker-sep">·</span> OSINT Masterclass <span class="ticker-sep">·</span> Stay Tuned <span class="ticker-sep">·</span> 🔒 More Ethical Hacking Resources Dropping</span>
+      <span class="ticker-chunk">🚀 NEW UPDATE COMING SOON <span class="ticker-sep">·</span> Extra Hacking Tools &amp; Tutorials <span class="ticker-sep">·</span> Advanced Pentesting <span class="ticker-sep">·</span> OSINT Masterclass <span class="ticker-sep">·</span> Stay Tuned <span class="ticker-sep">·</span> 🔒 More Ethical Hacking Resources Dropping</span>
+    </div>
+  </div>
+
+  <!-- ================================================
+       ABOUT SECTION
+       ================================================ -->
+  <section class="about-section" id="about">
+
+    <!-- Left: binary art — rotates on scroll via JS -->
+    <div class="about-visual-col reveal-left">
+      <pre class="binary-art" id="js-binary">01001000 01000001 01001110<br>01011010 01000001 01001100<br>01000001 00100000 01000100<br>01000101 01010110 00100000<br>█░░░░░░░░░░░░░░░░░░░░░░█<br>░▓▓▓░░░░░░░░░░░░░░▓▓▓░░<br>░▓██░░░░██████░░░░██▓░░░<br>░░░░░░░░░░░░░░░░░░░░░░░░<br>░░░██▓░░░░░░░░░░▓██░░░░░<br>░░░░▓▓▓░░░░░░▓▓▓░░░░░░░░<br>█░░░░░░░░░░░░░░░░░░░░░░█<br>// HANZALA.DEV //</pre>
+    </div>
+
+    <!-- Right: text -->
+    <div class="reveal-right">
+      <div class="sec-label">// about</div>
+      <h2 class="sec-title">Hacking the<br>System of Learning.</h2>
+      <p class="about-text">
+        I'm Hanzala — a developer, designer, and educator with a deep passion for ethical hacking and digital skills. I build automated bots on Telegram &amp; Discord, craft Python programs, design luxury websites, and practice the ancient art of calligraphy. This platform is my way of sharing premium knowledge: curated courses, mastered tools, and hand-picked resources for curious minds.
+      </p>
+      <div class="stats-row">
+        <div>
+          <div class="stat-num">11+</div>
+          <div class="stat-lbl">Courses</div>
+        </div>
+        <div>
+          <div class="stat-num">500+</div>
+          <div class="stat-lbl">AI Reels</div>
+        </div>
+        <div>
+          <div class="stat-num">∞</div>
+          <div class="stat-lbl">Knowledge</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       COURSES / CATEGORIES SECTION
+       ================================================ -->
+  <section class="courses-section" id="courses">
+    <div class="courses-head">
+      <div class="sec-label reveal">// courses &amp; resources</div>
+      <h2 class="sec-title reveal d1">What's Inside.</h2>
+      <p class="courses-hint reveal d2">
+        Click any category to explore its content and get the Google Drive link.
+      </p>
+    </div>
+
+    <!-- ===== COURSES GRID =====
+         To add a new course: copy one .course-card block,
+         give it a unique onclick id (e.g. openModal('newcourse')),
+         then add its data to the JS courses object below.
+    ========================== -->
+    <div class="courses-grid">
+
+      <!-- CARD 01 — Dark Web -->
+      <div class="course-card reveal"         onclick="openModal('darkweb')" tabindex="0" role="button" aria-label="Open Dark Web Course">
+        <div class="course-num">01 / HACKING</div>
+        <div class="course-icon-el">🌐</div>
+        <div class="course-name">Dark Web Course Complete</div>
+        <div class="course-tag">Ethical Hacking</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 02 — Canca -->
+      <div class="course-card reveal d1"      onclick="openModal('canca')" tabindex="0" role="button" aria-label="Open Canca Courses">
+        <div class="course-num">02 / DESIGN</div>
+        <div class="course-icon-el">🎨</div>
+        <div class="course-name">Canca Courses</div>
+        <div class="course-tag">Design &amp; Tools</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 03 — Badar Trading -->
+      <div class="course-card reveal d2"      onclick="openModal('badar')" tabindex="0" role="button" aria-label="Open Badar Trading Courses">
+        <div class="course-num">03 / FINANCE</div>
+        <div class="course-icon-el">📈</div>
+        <div class="course-name">Badar Trading Courses</div>
+        <div class="course-tag">Crypto &amp; Trading</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 04 — Dhruv Rathe -->
+      <div class="course-card reveal d3"      onclick="openModal('dhruv')" tabindex="0" role="button" aria-label="Open Dhruv Rathe Blueprint">
+        <div class="course-num">04 / YOUTUBE</div>
+        <div class="course-icon-el">▶</div>
+        <div class="course-name">Dhruv Rathe YouTube Blue Print</div>
+        <div class="course-tag">YouTube Growth</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 05 — YouTube Automation -->
+      <div class="course-card reveal"         onclick="openModal('ytauto')" tabindex="0" role="button" aria-label="Open YouTube Automation">
+        <div class="course-num">05 / AUTOMATION</div>
+        <div class="course-icon-el">🤖</div>
+        <div class="course-name">YouTube Automation</div>
+        <div class="course-tag">Passive Income</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 06 — AI Reels -->
+      <div class="course-card reveal d1"      onclick="openModal('aireels')" tabindex="0" role="button" aria-label="Open AI Reels Bundle">
+        <div class="course-num">06 / AI CONTENT</div>
+        <div class="course-icon-el">🎬</div>
+        <div class="course-name">AI Reels Bundle 500+</div>
+        <div class="course-tag">Content Creation</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 07 — Adobe -->
+      <div class="course-card reveal d2"      onclick="openModal('adobe')" tabindex="0" role="button" aria-label="Open Adobe Software">
+        <div class="course-num">07 / CREATIVE</div>
+        <div class="course-icon-el">⬡</div>
+        <div class="course-name">Adobe All Softwares</div>
+        <div class="course-tag">Creative Suite</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 08 — Blender -->
+      <div class="course-card reveal d3"      onclick="openModal('blender')" tabindex="0" role="button" aria-label="Open Blender Full Course">
+        <div class="course-num">08 / 3D ART</div>
+        <div class="course-icon-el">◈</div>
+        <div class="course-name">Blender Full Course</div>
+        <div class="course-tag">3D Design</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 09 — E-Books -->
+      <div class="course-card reveal"         onclick="openModal('ebooks')" tabindex="0" role="button" aria-label="Open Programming E-Books">
+        <div class="course-num">09 / PROGRAMMING</div>
+        <div class="course-icon-el">📚</div>
+        <div class="course-name">Programming E-Books</div>
+        <div class="course-tag">Dev Resources</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 10 — UI Design -->
+      <div class="course-card reveal d1"      onclick="openModal('uidesign')" tabindex="0" role="button" aria-label="Open UI Design & Systems">
+        <div class="course-num">10 / UI/UX</div>
+        <div class="course-icon-el">◻</div>
+        <div class="course-name">UI Design &amp; Systems Full Guide</div>
+        <div class="course-tag">Design Systems</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+      <!-- CARD 11 — Instagram -->
+      <div class="course-card reveal d2"      onclick="openModal('instagram')" tabindex="0" role="button" aria-label="Open Instagram Algorithm Course">
+        <div class="course-num">11 / SOCIAL</div>
+        <div class="course-icon-el">◉</div>
+        <div class="course-name">Instagram Algorithm Course</div>
+        <div class="course-tag">Social Growth</div>
+        <div class="course-arrow">→</div>
+      </div>
+
+    </div><!-- /courses-grid -->
+  </section>
+
+  <!-- ================================================
+       COMING SOON SECTION
+       ================================================ -->
+  <section class="coming-section">
+    <div class="coming-radial"></div>
+    <div class="coming-inner">
+      <div class="live-badge reveal">
+        <span class="live-dot"></span> LIVE — UPDATE IN PROGRESS
+      </div>
+      <h2 class="coming-title reveal d1">
+        New Update<br>
+        <span class="muted-line">Coming Soon</span>
+      </h2>
+      <p class="coming-desc reveal d2">
+        A major update is on the way — packed with extra hacking tools, penetration testing tutorials, OSINT techniques, advanced cybersecurity courses, and much more. Stay connected for the drop.
+      </p>
+      <div class="coming-pills reveal d3">
+        <span class="coming-pill">Penetration Testing Tools</span>
+        <span class="coming-pill">OSINT Masterclass</span>
+        <span class="coming-pill">Bug Bounty Guide</span>
+        <span class="coming-pill">Kali Linux Full Course</span>
+        <span class="coming-pill">Network Security</span>
+        <span class="coming-pill">Malware Analysis</span>
+        <span class="coming-pill">Dark Web Operations</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       FOOTER
+       ================================================ -->
+  <footer id="footer">
+    <div class="footer-logo reveal-left">LEARN WITH HANZALA</div>
+    <div class="footer-mid reveal">
+      <div>© 2025 Hanzala.dev — All Rights Reserved</div>
+      <div>hanzala.dev@hotmail.com &nbsp;·&nbsp; +92 318 442 7080</div>
+    </div>
+    <div class="footer-right reveal-right">
+      <a href="https://wa.me/923184427080" target="_blank" rel="noopener" class="footer-link">WhatsApp</a>
+      <a href="mailto:hanzala.dev@hotmail.com" class="footer-link">Email</a>
+    </div>
+  </footer>
+
+  <!-- ================================================
+       MODAL OVERLAY
+       ================================================ -->
+  <div class="modal-overlay" id="js-overlay">
+    <div class="modal" id="js-modal" role="dialog" aria-modal="true">
+
+      <!-- Close button -->
+      <button class="modal-x" id="js-modal-x" aria-label="Close">✕</button>
+
+      <!-- Dynamic content injected by JS -->
+      <div class="modal-num" id="js-modal-num"></div>
+      <h2 class="modal-title" id="js-modal-title"></h2>
+      <p class="modal-intro" id="js-modal-intro"></p>
+
+      <div class="modal-hr"></div>
+
+      <!-- ===== GOOGLE DRIVE LINK SECTION =====
+           The link is injected from the JS courses object.
+           To update a link: find the course id in courses{}
+           and replace 'YOUR_GOOGLE_DRIVE_LINK_HERE' with the real URL.
+      ======================================== -->
+      <div class="drive-box">
+        <div class="drive-box-lbl">📁 Access Resource</div>
+        <p class="drive-box-sub">Click the button below to open the full course on Google Drive.</p>
+        <a class="drive-btn" id="js-drive-btn" href="#" target="_blank" rel="noopener">
+          ▶ &nbsp;Open in Google Drive
+        </a>
+        <span class="drive-url" id="js-drive-url"></span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================
+       JAVASCRIPT
+       ================================================ -->
+  <script>
+    /* ================================================
+       COURSE DATA
+       -----------------------------------------------
+       To add a Google Drive link for a course:
+         1. Find the course by its key (e.g. 'darkweb')
+         2. Replace the link value with your actual URL
+         3. Save and refresh
+       ================================================ */
+    const COURSES = {
+
+      // ---- 01: DARK WEB COURSE ----
+      darkweb: {
+        num:   '01 / ETHICAL HACKING',
+        title: 'Dark Web Course — Complete',
+        intro: 'A comprehensive deep-dive into the Dark Web — how it works, how to navigate it safely and ethically, and how security professionals use it for threat intelligence. Covers Tor networks, onion routing, anonymous browsing, and how cybersecurity experts monitor underground ecosystems. Strictly for educational and ethical purposes. Master the knowledge that most people are afraid to seek.',
+        link:  'https://drive.google.com/file/d/1ZuhSYVkmrY7Cn2hWX44qikI1srgx70ae/view?t=17.742',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 02: CANCA COURSES ----
+      canca: {
+        num:   '02 / DESIGN',
+        title: 'Canca Courses',
+        intro: 'A full collection of Canca design courses covering visual content creation, graphic design principles, and creative tools. Learn to design stunning visuals, social media content, and marketing materials with professional-grade techniques used by top designers worldwide. Perfect for beginners and intermediates looking to build a real design skill set.',
+        link:  'https://drive.google.com/file/d/1VFb7joCnBxOS5Oe0mRNzpW2cWgXK5U60/view?t=0.69',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 03: BADAR TRADING ----
+      badar: {
+        num:   '03 / FINANCE & TRADING',
+        title: 'Badar Trading Courses',
+        intro: 'Badar Trading Courses offer a practical approach to understanding financial markets, crypto trading, and investment strategies. Learn technical analysis, chart reading, risk management, and consistent trading habits. Suitable for beginners and intermediate traders ready to build a disciplined, data-driven trading mindset.',
+        link:  'YOUR_GOOGLE_DRIVE_LINK_HERE',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 04: DHRUV RATHE ----
+      dhruv: {
+        num:   '04 / YOUTUBE STRATEGY',
+        title: 'Dhruv Rathe YouTube Blue Print',
+        intro: 'The exact blueprint used by Dhruv Rathe to grow a massive YouTube audience. This course breaks down content strategy, video scripting, thumbnail psychology, SEO optimization, and audience retention. A step-by-step roadmap to building a successful channel from scratch — proven, structured, and battle-tested.',
+        link:  'YOUR_GOOGLE_DRIVE_LINK_HERE',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 05: YOUTUBE AUTOMATION ----
+      ytauto: {
+        num:   '05 / AUTOMATION',
+        title: 'YouTube Automation',
+        intro: 'Build and scale YouTube channels on automation — from faceless content creation to outsourcing workflows. Covers channel setup, niche selection, script writing systems, AI voiceover tools, editing pipelines, and monetization strategies designed to run with minimal daily effort. Your passive income engine starts here.',
+        link:  'https://drive.google.com/drive/folders/1x8PsTRiVpVUnUhaAkiwDN9LeAs4j8BLK',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 06: AI REELS BUNDLE ----
+      aireels: {
+        num:   '06 / AI CONTENT',
+        title: 'AI Reels Bundle 500+',
+        intro: 'A massive bundle of 500+ AI-generated reels, ready to post across your social media channels. Spanning multiple niches — motivation, lifestyle, tech, humor, and more — this bundle is your shortcut to consistent content without the time investment of creating from scratch. Upload, post, grow.',
+        link:  '1eTsCHJU3e9DYHUw4d3lQl6g9qqhQMJIc',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 07: ADOBE SOFTWARES ----
+      adobe: {
+        num:   '07 / CREATIVE TOOLS',
+        title: 'Adobe All Softwares',
+        intro: 'Access to the full suite of Adobe software resources — Photoshop, Illustrator, Premiere Pro, After Effects, InDesign, Lightroom, and more. Includes installation guides, tutorials, and workflow resources to help you master the industry-standard creative toolkit used by professionals across film, design, and marketing.',
+        link:  'https://drive.google.com/drive/folders/1zGyeO_3TqwyIbvjNE1xxRQ9KXI2MLvsr',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 08: BLENDER ----
+      blender: {
+        num:   '08 / 3D DESIGN',
+        title: 'Blender Full Course',
+        intro: 'A complete Blender course taking you from zero to creating professional 3D models, animations, and renders. Covers the full interface, modeling fundamentals, texturing, lighting, particle systems, rigging, and animation — everything needed to produce cinematic 3D visuals and motion graphics.',
+        link:  'YOUR_GOOGLE_DRIVE_LINK_HERE',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 09: PROGRAMMING E-BOOKS ----
+      ebooks: {
+        num:   '09 / PROGRAMMING',
+        title: 'Programming E-Books',
+        intro: 'A curated library of programming e-books covering Python, JavaScript, C++, web development, data structures, algorithms, cybersecurity, AI/ML, and more. Handpicked resources used by professional developers and CS students worldwide — your offline reference library for deep learning and study.',
+        link:  'https://drive.google.com/drive/folders/1SXMSTifS80TzhWfEtNnJ_n7-wuS5u_FB',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 10: UI DESIGN & SYSTEMS ----
+      uidesign: {
+        num:   '10 / UI/UX DESIGN',
+        title: 'UI Design & Systems Full Guide',
+        intro: 'A comprehensive guide to UI design and design systems — covering design principles, color theory, typography, component libraries, Figma workflows, prototyping, and how to build scalable design systems from the ground up. Essential for anyone aiming to become a serious, professional UI/UX designer.',
+        link:  'https://drive.google.com/drive/folders/17cgU7HYVOULKlpqkddNMmFY3pkG4U43l',  // <-- PASTE YOUR LINK HERE
+      },
+
+      // ---- 11: INSTAGRAM ALGORITHM ----
+      instagram: {
+        num:   '11 / SOCIAL MEDIA',
+        title: 'Instagram Algorithm Course',
+        intro: 'Decode the Instagram algorithm and learn exactly how to work with it. Covers content strategy, posting schedules, hashtag research, reel performance hacks, engagement tactics, and growth techniques working right now in real-time. Built for creators and business owners who want sustainable, real growth — not tricks.',
+        link:  'https://drive.google.com/drive/folders/1uoUxcssFdKcuZJM92ar7_m7OtWrwX9rm',  // <-- PASTE YOUR LINK HERE
+      },
+
+    };
+
+    /* ================================================
+       MODAL — open / close
+       ================================================ */
+    const overlay   = document.getElementById('js-overlay');
+    const modalNum  = document.getElementById('js-modal-num');
+    const modalTtl  = document.getElementById('js-modal-title');
+    const modalIntr = document.getElementById('js-modal-intro');
+    const driveBtn  = document.getElementById('js-drive-btn');
+    const driveUrl  = document.getElementById('js-drive-url');
+    const modalX    = document.getElementById('js-modal-x');
+
+    function openModal(id) {
+      const c = COURSES[id];
+      if (!c) return;
+
+      modalNum.textContent  = c.num;
+      modalTtl.textContent  = c.title;
+      modalIntr.textContent = c.intro;
+
+      const hasLink = c.link && c.link !== 'YOUR_GOOGLE_DRIVE_LINK_HERE';
+      if (hasLink) {
+        driveBtn.href             = c.link;
+        driveBtn.style.opacity    = '1';
+        driveBtn.style.pointerEvents = 'auto';
+        driveUrl.textContent      = c.link;
+      } else {
+        driveBtn.href             = '#';
+        driveBtn.style.opacity    = '0.38';
+        driveBtn.style.pointerEvents = 'none';
+        driveUrl.textContent      = '// Link coming soon — paste your Google Drive URL in the code //';
+      }
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Close on backdrop click
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+    // Close button
+    modalX.addEventListener('click', closeModal);
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+    // Keyboard: open card with Enter/Space
+    document.querySelectorAll('.course-card').forEach(card => {
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') card.click();
+      });
+    });
+
+    /* ================================================
+       DARK MODE TOGGLE
+       ================================================ */
+    const themeBtn = document.getElementById('js-theme-btn');
+    const html     = document.documentElement;
+
+    // Load saved preference
+    const savedTheme = localStorage.getItem('lwh-theme');
+    if (savedTheme) html.setAttribute('data-theme', savedTheme);
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      const next   = isDark ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('lwh-theme', next);
+    });
+
+    /* ================================================
+       SCROLL REVEAL — IntersectionObserver
+       ================================================ */
+    const revEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revEls.forEach(el => io.observe(el));
+
+    /* ================================================
+       SCROLL PROGRESS BAR
+       ================================================ */
+    const scrollFill = document.getElementById('js-scroll-fill');
+    window.addEventListener('scroll', () => {
+      const top  = window.scrollY;
+      const max  = document.documentElement.scrollHeight - window.innerHeight;
+      const pct  = max > 0 ? (top / max) * 100 : 0;
+      scrollFill.style.height = pct + '%';
+    }, { passive: true });
+
+    /* ================================================
+       CUSTOM CURSOR — smooth lag follow
+       ================================================ */
+    const cur  = document.getElementById('js-cursor');
+    const ring = document.getElementById('js-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mx = e.clientX; my = e.clientY;
+      cur.style.left = mx + 'px';
+      cur.style.top  = my + 'px';
+    });
+    (function animRing() {
+      rx += (mx - rx) * 0.11;
+      ry += (my - ry) * 0.11;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animRing);
+    })();
+
+    // Cursor grow on interactive elements
+    document.querySelectorAll('a, button, .course-card').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        ring.style.transform = 'translate(-50%,-50%) scale(1.9)';
+        ring.style.opacity   = '0.22';
+      });
+      el.addEventListener('mouseleave', () => {
+        ring.style.transform = 'translate(-50%,-50%) scale(1)';
+        ring.style.opacity   = '0.45';
+      });
+    });
+
+    /* ================================================
+       HERO ORB — mouse-tracked 3D tilt
+       ================================================ */
+    const orb = document.getElementById('js-orb');
+    if (orb) {
+      document.addEventListener('mousemove', (e) => {
+        const cx = window.innerWidth  / 2;
+        const cy = window.innerHeight / 2;
+        const dx = (e.clientX - cx) / cx;
+        const dy = (e.clientY - cy) / cy;
+        orb.style.transform = `perspective(700px) rotateY(${dx * 22}deg) rotateX(${-dy * 22}deg)`;
+      });
+    }
+
+    /* ================================================
+       BINARY ART — 3D rotation on scroll
+       ================================================ */
+    const binEl = document.getElementById('js-binary');
+    if (binEl) {
+      window.addEventListener('scroll', () => {
+        const s   = window.scrollY;
+        const rX  = (s * 0.04) % 360;
+        const rY  = (s * 0.025) % 360;
+        binEl.style.transform = `rotate(-3deg) rotateX(${rX}deg) rotateY(${rY}deg)`;
+      }, { passive: true });
+    }
+
+    /* ================================================
+       COURSE CARD — 3D TILT on hover (desktop)
+       ================================================ */
+    if (window.matchMedia('(hover: hover)').matches) {
+      document.querySelectorAll('.course-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const r  = card.getBoundingClientRect();
+          const x  = ((e.clientX - r.left) / r.width  - 0.5) * 12;
+          const y  = ((e.clientY - r.top)  / r.height - 0.5) * -12;
+          card.style.transform = `perspective(600px) rotateX(${y}deg) rotateY(${x}deg) translateZ(4px)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+        });
+      });
+    }
+
+    /* ================================================
+       ON-SCROLL IMAGE ROTATION — generic 3D parallax
+       Applies a subtle rotateX/Y to elements with
+       data-scroll-3d attribute as you scroll past them.
+       ================================================ */
+    window.addEventListener('scroll', () => {
+      document.querySelectorAll('[data-scroll-3d]').forEach(el => {
+        const rect  = el.getBoundingClientRect();
+        const mid   = window.innerHeight / 2;
+        const delta = (rect.top + rect.height / 2 - mid) / mid;
+        el.style.transform = `perspective(800px) rotateX(${delta * 8}deg)`;
+      });
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
